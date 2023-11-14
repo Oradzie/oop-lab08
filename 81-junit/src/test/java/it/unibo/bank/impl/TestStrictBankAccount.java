@@ -5,6 +5,8 @@ import it.unibo.bank.api.BankAccount;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import static it.unibo.bank.impl.SimpleBankAccount.MANAGEMENT_FEE;
+import static it.unibo.bank.impl.StrictBankAccount.TRANSACTION_FEE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.Assertions;
@@ -43,9 +45,10 @@ public class TestStrictBankAccount {
      */
     @Test
     public void testManagementFees() {
-        int newDeposit = 100;
-        double expectedValue = (INITIAL_AMOUNT + newDeposit) - (5 + 1 * 0.1);
+        final int newDeposit = 100;
         bankAccount.deposit(mRossi.getUserID(), newDeposit);
+        final var fees = MANAGEMENT_FEE + bankAccount.getTransactionsCount() * TRANSACTION_FEE;
+        double expectedValue = INITIAL_AMOUNT + newDeposit - fees;
         bankAccount.chargeManagementFees(mRossi.getUserID());
         assertEquals(expectedValue, bankAccount.getBalance());
     }
@@ -57,7 +60,7 @@ public class TestStrictBankAccount {
     public void testNegativeWithdraw() {
         try {
             bankAccount.withdraw(mRossi.getUserID(), -100);
-            Assertions.fail();
+            Assertions.fail("Withdraw successful with negative amount");
         } catch (IllegalArgumentException e) {
             assertEquals("Cannot withdraw a negative amount", e.getMessage());
         }
@@ -70,6 +73,7 @@ public class TestStrictBankAccount {
     public void testWithdrawingTooMuch() {
         try {
             bankAccount.withdraw(mRossi.getUserID(), bankAccount.getBalance() + 1);
+            Assertions.fail("Withdraw success with insufficent balance");
         } catch (IllegalArgumentException e) {
             assertEquals("Insufficient balance", e.getMessage());
         }
