@@ -1,17 +1,15 @@
 package it.unibo.deathnote;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.nio.channels.spi.SelectorProvider;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import static java.lang.Thread.sleep;
 
 import it.unibo.deathnote.api.DeathNote;
 import it.unibo.deathnote.impl.DeathNoteImpl;
@@ -56,7 +54,7 @@ class TestDeathNote {
     }
 
     @Test
-    public void TestDeathCause() {
+    public void TestDeathCause() throws InterruptedException {
         try {
             final String name = "Luca";
             final String cause = "infarto";
@@ -72,12 +70,7 @@ class TestDeathNote {
             deathNote.writeName("Giovanni");
             assertTrue(deathNote.writeDeathCause("karting accident"));
             assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
-            try {
-                Thread.sleep(100l);
-            } catch (InterruptedException e) {
-
-            }
+            sleep(100);
         }
-
     }
 }
