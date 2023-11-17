@@ -90,6 +90,6 @@ class TestDeathNote {
         deathNote.writeName("Luca");
         sleep(6100l);
         assertFalse(deathNote.writeDetails("infarto"));
-        assertEquals("infarto", deathNote.getDeathDetails("Luca"));
+        assertTrue(deathNote.getDeathDetails("Luca").isBlank());
     }
 }
