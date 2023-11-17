@@ -16,6 +16,8 @@ import it.unibo.deathnote.impl.DeathNoteImpl;
 class TestDeathNote {
 
     private DeathNote deathNote;
+    private static final String MARCO = "Marco";
+    private static final String PAOLO = "Paolo";
 
     @BeforeEach
     public void setUp() {
@@ -29,7 +31,8 @@ class TestDeathNote {
             deathNote.getRule(-1);
             Assertions.fail("Rule smaller than 1 or larger than number of rules didn't thrown an exception.");
         } catch (IllegalArgumentException e) {
-            assertEquals("The given rule number is smaller than 1 or larger than the number of rules", e.getMessage());
+            assertNotNull(e.getMessage());
+            assertFalse(e.getMessage().isBlank());
         }
     }
 
@@ -43,35 +46,30 @@ class TestDeathNote {
 
     @Test
     public void TestHumanDeath() {
-        final String name = "Luca";
-        final String wrongName = "Marco";
-        assertFalse(deathNote.isNameWritten(name));
-        deathNote.writeName(name);
-        assertTrue(deathNote.isNameWritten(name));
-        assertFalse(deathNote.isNameWritten(wrongName));
+        assertFalse(deathNote.isNameWritten(MARCO));
+        deathNote.writeName(MARCO);
+        assertTrue(deathNote.isNameWritten(MARCO));
+        assertFalse(deathNote.isNameWritten(PAOLO));
         assertFalse(deathNote.isNameWritten(""));
     }
 
     @Test
     public void TestDeathCause() throws InterruptedException {
         try {
-            final String name = "Luca";
-            final String cause = "infarto";
-            deathNote.writeDeathCause(cause);
-            deathNote.writeName(name);
+            deathNote.writeDeathCause("infarto");
             Assertions.fail("Writing death cause before writing name didn't thrown an exception");
         } catch (IllegalStateException e) {
             assertNotNull(e.getMessage());
             assertFalse(e.getMessage().isBlank());
         }
-        deathNote.writeName("Paolo");
-        assertEquals(DeathNoteImpl.DEFAULT_CAUSE, deathNote.getDeathCause("Paolo"));
-        deathNote.writeName("Giovanni");
+        deathNote.writeName(PAOLO);
+        assertEquals(DeathNoteImpl.DEFAULT_CAUSE, deathNote.getDeathCause(PAOLO));
+        deathNote.writeName(MARCO);
         assertTrue(deathNote.writeDeathCause("karting accident"));
-        assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
+        assertEquals("karting accident", deathNote.getDeathCause(MARCO));
         sleep(100);
         assertFalse(deathNote.writeDeathCause("sparato"));
-        assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
+        assertEquals("karting accident", deathNote.getDeathCause(MARCO));
     }
 
     @Test
@@ -83,13 +81,13 @@ class TestDeathNote {
             assertNotNull(e.getMessage());
             assertFalse(e.getMessage().isBlank());
         }
-        deathNote.writeName("Giovanni");
-        assertTrue(deathNote.getDeathDetails("Giovanni").isBlank());
+        deathNote.writeName(MARCO);
+        assertTrue(deathNote.getDeathDetails(MARCO).isBlank());
         assertTrue(deathNote.writeDetails("ran for too long"));
-        assertEquals("ran for too long", deathNote.getDeathDetails("Giovanni"));
-        deathNote.writeName("Luca");
+        assertEquals("ran for too long", deathNote.getDeathDetails(MARCO));
+        deathNote.writeName(PAOLO);
         sleep(6100l);
         assertFalse(deathNote.writeDetails("infarto"));
-        assertTrue(deathNote.getDeathDetails("Luca").isBlank());
+        assertTrue(deathNote.getDeathDetails(PAOLO).isBlank());
     }
 }

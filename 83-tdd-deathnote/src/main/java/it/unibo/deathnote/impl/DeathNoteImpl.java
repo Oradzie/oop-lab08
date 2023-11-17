@@ -1,6 +1,6 @@
 package it.unibo.deathnote.impl;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import it.unibo.deathnote.api.DeathNote;
@@ -8,7 +8,8 @@ import it.unibo.deathnote.api.DeathNote;
 public class DeathNoteImpl implements DeathNote {
 
     public static final String DEFAULT_CAUSE = "heart hattack";
-    private final Map<String, Pair> deathNote = new HashMap<>();
+    public static final String DEAFULT_DETAILS = "";
+    private final Map<String, Death> deathNote = new LinkedHashMap<>();
     private String lastNameWritten;
     private long timeOfDeath;
 
@@ -24,17 +25,18 @@ public class DeathNoteImpl implements DeathNote {
     @Override
     public void writeName(String name) {
         if (name == null) {
-            throw new NullPointerException("Error");
+            throw new NullPointerException("Passed null instead of a string as the name of the person.");
         }
         this.lastNameWritten = name;
-        this.deathNote.put(name, new Pair(DEFAULT_CAUSE, ""));
+        this.deathNote.put(name, new Death(DEFAULT_CAUSE, DEAFULT_DETAILS));
         this.timeOfDeath = System.currentTimeMillis();
     }
 
     @Override
     public boolean writeDeathCause(String cause) {
         if (cause == null || deathNote.isEmpty()) {
-            throw new IllegalStateException("Error");
+            throw new IllegalStateException(
+                    "Passed null or the death note is empty, need a valid string or to write or a new name before adding a cause.");
         }
         if (System.currentTimeMillis() > this.timeOfDeath + 40) {
             return false;
@@ -46,7 +48,8 @@ public class DeathNoteImpl implements DeathNote {
     @Override
     public boolean writeDetails(String details) {
         if (details == null || deathNote.isEmpty()) {
-            throw new IllegalStateException("Error");
+            throw new IllegalStateException(
+                    "Passed null or the death note is empty, need a valid string or to write or a new name before adding deatils.");
         }
         if (System.currentTimeMillis() > this.timeOfDeath + 6040l) {
             return false;
@@ -58,7 +61,7 @@ public class DeathNoteImpl implements DeathNote {
     @Override
     public String getDeathCause(String name) {
         if (this.deathNote.get(name) == null) {
-            throw new IllegalArgumentException("Error");
+            throw new IllegalArgumentException("Name not in the death note need to add it first.");
         }
         return this.deathNote.get(name).getCause();
     }
@@ -66,7 +69,7 @@ public class DeathNoteImpl implements DeathNote {
     @Override
     public String getDeathDetails(String name) {
         if (this.deathNote.get(name) == null) {
-            throw new IllegalArgumentException("Error");
+            throw new IllegalArgumentException("Name not in the death note need to add it first.");
         }
         return this.deathNote.get(name).getDetails();
     }

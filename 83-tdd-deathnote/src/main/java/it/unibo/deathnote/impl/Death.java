@@ -1,11 +1,11 @@
 package it.unibo.deathnote.impl;
 
-public class Pair {
+public class Death {
 
     private String cause;
     private String details;
 
-    public Pair(String cause, String details) {
+    public Death(String cause, String details) {
         this.cause = cause;
         this.details = details;
     }
