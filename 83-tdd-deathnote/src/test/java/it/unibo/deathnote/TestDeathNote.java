@@ -3,7 +3,6 @@ package it.unibo.deathnote;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Assertions;
@@ -20,7 +19,7 @@ class TestDeathNote {
 
     @BeforeEach
     public void setUp() {
-        this.deathNote = new DeathNoteImpl("Mario", "Sparato", "Buco in testa");
+        this.deathNote = new DeathNoteImpl();
     }
 
     @Test
@@ -64,13 +63,33 @@ class TestDeathNote {
         } catch (IllegalStateException e) {
             assertNotNull(e.getMessage());
             assertFalse(e.getMessage().isBlank());
-        } finally {
-            deathNote.writeName("Paolo");
-            assertEquals("Heart attack", deathNote.getDeathCause("Paolo"));
-            deathNote.writeName("Giovanni");
-            assertTrue(deathNote.writeDeathCause("karting accident"));
-            assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
-            sleep(100);
         }
+        deathNote.writeName("Paolo");
+        assertEquals(DeathNoteImpl.DEFAULT_CAUSE, deathNote.getDeathCause("Paolo"));
+        deathNote.writeName("Giovanni");
+        assertTrue(deathNote.writeDeathCause("karting accident"));
+        assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
+        sleep(100);
+        assertFalse(deathNote.writeDeathCause("sparato"));
+        assertEquals("karting accident", deathNote.getDeathCause("Giovanni"));
+    }
+
+    @Test
+    public void TestTimeElapsed() throws InterruptedException {
+        try {
+            deathNote.writeDetails("infarto");
+            Assertions.fail("Writing death cause before writing name didn't thrown an exception");
+        } catch (IllegalStateException e) {
+            assertNotNull(e.getMessage());
+            assertFalse(e.getMessage().isBlank());
+        }
+        deathNote.writeName("Giovanni");
+        assertTrue(deathNote.getDeathDetails("Giovanni").isBlank());
+        assertTrue(deathNote.writeDetails("ran for too long"));
+        assertEquals("ran for too long", deathNote.getDeathDetails("Giovanni"));
+        deathNote.writeName("Luca");
+        sleep(6100l);
+        assertFalse(deathNote.writeDetails("infarto"));
+        assertEquals("infarto", deathNote.getDeathDetails("Luca"));
     }
 }

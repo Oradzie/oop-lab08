@@ -1,60 +1,80 @@
 package it.unibo.deathnote.impl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import it.unibo.deathnote.api.DeathNote;
 
 public class DeathNoteImpl implements DeathNote {
 
-    private final String name;
-    private final String cause;
-    private final String details;
-
-    public DeathNoteImpl(final String name, final String cause, final String details) {
-        this.name = name;
-        this.cause = cause;
-        this.details = details;
-    }
+    public static final String DEFAULT_CAUSE = "heart hattack";
+    private final Map<String, Pair> deathNote = new HashMap<>();
+    private String lastNameWritten;
+    private long timeWrittenName;
+    private long timeWrittenCause;
 
     @Override
     public String getRule(int ruleNumber) {
-        // TODO Auto-generated method stub
-        throw new IllegalArgumentException(
-                "The given rule number is smaller than 1 or larger than the number of rules");
+        if (ruleNumber < 1 || ruleNumber > DeathNote.RULES.size()) {
+            throw new IllegalArgumentException(
+                    "The given rule number is smaller than 1 or larger than the number of rules");
+        }
+        return DeathNote.RULES.get(ruleNumber - 1);
     }
 
     @Override
     public void writeName(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeName'");
+        if (name == null) {
+            throw new NullPointerException("Error");
+        }
+        this.lastNameWritten = name;
+        this.deathNote.put(name, new Pair(DEFAULT_CAUSE, ""));
+        this.timeWrittenName = System.currentTimeMillis();
     }
 
     @Override
     public boolean writeDeathCause(String cause) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeDeathCause'");
+        if (cause == null || deathNote.isEmpty()) {
+            throw new IllegalStateException("Error");
+        }
+        if (System.currentTimeMillis() - this.timeWrittenName > 40) {
+            return false;
+        }
+        this.timeWrittenCause = System.currentTimeMillis();
+        return this.deathNote.get(this.lastNameWritten).setCause(cause);
     }
 
     @Override
     public boolean writeDetails(String details) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'writeDetails'");
+        if (details == null || deathNote.isEmpty()) {
+            throw new IllegalStateException("Error");
+        }
+        if (System.currentTimeMillis() - this.timeWrittenCause > 6040) {
+            return false;
+        }
+        return this.deathNote.get(this.lastNameWritten).setDetails(details);
     }
 
     @Override
     public String getDeathCause(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDeathCause'");
+        if (this.deathNote.get(name) == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        return this.deathNote.get(name).getCause();
     }
 
     @Override
     public String getDeathDetails(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getDeathDetails'");
+        if (this.deathNote.get(name) == null) {
+            throw new IllegalArgumentException();
+        }
+        
+        return this.deathNote.get(name).getDetails();
     }
 
     @Override
     public boolean isNameWritten(String name) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'isNameWritten'");
+        return this.deathNote.get(name) != null;
     }
-
 }
